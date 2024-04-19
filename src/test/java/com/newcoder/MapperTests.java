@@ -1,10 +1,13 @@
 package com.newcoder;
 
+import com.newcoder.controller.DiscussPostController;
 import com.newcoder.mapper.DiscussPostMapper;
 import com.newcoder.mapper.LoginTicketMapper;
+import com.newcoder.mapper.MessageMapper;
 import com.newcoder.mapper.UserMapper;
 import com.newcoder.pojo.DiscussPost;
 import com.newcoder.pojo.LoginTicket;
+import com.newcoder.pojo.Message;
 import com.newcoder.pojo.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +29,12 @@ public class MapperTests {
 
     @Autowired
     private LoginTicketMapper loginTicketMapper;
+
+    @Autowired
+    private DiscussPostController discussPostController;
+
+    @Autowired
+    private MessageMapper messageMapper;
 
     @Test
     public void testSelectPosts() {
@@ -63,6 +72,34 @@ public class MapperTests {
         loginTicketMapper.updateStatus("abc", 1);
         loginTicket = loginTicketMapper.selectByTicket("abc");
         System.out.println(loginTicket);
+    }
+
+    @Test
+    public void testInsertDiscussPost() {
+        System.out.println(discussPostController.addDiscussPost("xxxx", "xxxxx"));
+    }
+
+    @Test
+    public void testSelectLetters() {
+        List<Message> list = messageMapper.selectConversations(111, 0, 20);
+        for (Message message : list) {
+            System.out.println(message);
+        }
+
+        int count = messageMapper.selectConversationCount(111);
+        System.out.println(count);
+
+        list = messageMapper.selectLetters("111_112", 0, 10);
+        for (Message message : list) {
+            System.out.println(message);
+        }
+
+        count = messageMapper.selectLetterCount("111_112");
+        System.out.println(count);
+
+        count = messageMapper.selectLetterUnreadCount(131, "111_131");
+        System.out.println(count);
+
     }
 
 }
