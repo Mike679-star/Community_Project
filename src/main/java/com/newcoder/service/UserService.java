@@ -2,7 +2,9 @@ package com.newcoder.service;
 
 import com.newcoder.pojo.LoginTicket;
 import com.newcoder.pojo.User;
+import org.springframework.security.core.GrantedAuthority;
 
+import java.util.Collection;
 import java.util.Map;
 
 public interface UserService {
@@ -24,4 +26,6 @@ public interface UserService {
     int updatePassword(int id, String newPassword);
 
     User findUserByName(String username);
+
+    Collection<? extends GrantedAuthority> getAuthorities(int userId);
 }

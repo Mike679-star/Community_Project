@@ -8,7 +8,10 @@ import com.newcoder.service.UserService;
 import com.newcoder.util.CommunityConstant;
 import com.newcoder.util.CommunityUtil;
 import com.newcoder.util.HostHolder;
-import jakarta.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponse;
+
+import com.qiniu.util.Auth;
+import com.qiniu.util.StringMap;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.ui.Model;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +40,18 @@ public class UserController implements CommunityConstant {
     @Value("${server.servlet.context-path}")
     private String contextPath;
 
+    @Value("${qiniu.key.access}")
+    private String accessKey;
+
+    @Value("${qiniu.key.secret}")
+    private String secretKey;
+
+    @Value("${qiniu.bucket.header.name}")
+    private String headerBucketName;
+
+    @Value("${quniu.bucket.header.url}")
+    private String headerBucketUrl;
+
     @Autowired
     private UserService userService;
 
@@ -51,10 +66,37 @@ public class UserController implements CommunityConstant {
 
     @LoginRequired
     @GetMapping("/setting")
-    public String getSettingPage() {
+    public String getSettingPage(Model model) {
+        // 生成上传文件名称
+        String fileName = CommunityUtil.generateUUID();
+        // 设置响应信息
+        StringMap policy = new StringMap();
+        policy.put("returnBody", CommunityUtil.getJSONString(0));
+        // 生成上传凭证
+        Auth auth = Auth.create(accessKey, secretKey);
+        String uploadToken = auth.uploadToken(headerBucketName, fileName, 3600, policy);
+
+        model.addAttribute("uploadToken", uploadToken);
+        model.addAttribute("fileName", fileName);
+
         return "/site/setting";
     }
 
+    // 更新头像的路径
+    @PostMapping("/header/url")
+    @ResponseBody
+    public String updateHeaderUrl(String fileName) {
+        if (StringUtils.isBlank(fileName)) {
+            return CommunityUtil.getJSONString(1, "文件名不能为空！");
+        }
+
+        String url = headerBucketUrl + "/" + fileName;
+        userService.updateHeader(hostHolder.getUser().getId(), url);
+
+        return CommunityUtil.getJSONString(0);
+    }
+
+    // 废弃
     @LoginRequired
     @PostMapping("/upload")
     public String uploadHeader(MultipartFile headerImage, Model model) {
@@ -91,6 +133,7 @@ public class UserController implements CommunityConstant {
         return "redirect:/index";
     }
 
+    // 废弃
     @GetMapping("/header/{fileName}")
     public void getHeader(@PathVariable("fileName") String fileName, HttpServletResponse response) {
         // 服务器存放路径

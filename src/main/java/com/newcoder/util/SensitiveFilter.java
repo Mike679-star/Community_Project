@@ -1,6 +1,6 @@
 package com.newcoder.util;
 
-import jakarta.annotation.PostConstruct;
+import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.CharUtils;
 import org.apache.commons.lang3.StringUtils;

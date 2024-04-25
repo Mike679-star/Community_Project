@@ -12,4 +12,6 @@ public interface CommentService {
 
     int addComment(Comment comment);
 
+    Comment findCommentById(int id);
+
 }

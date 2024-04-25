@@ -1,7 +1,7 @@
 package com.newcoder.util;
 
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
